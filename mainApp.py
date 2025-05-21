@@ -9,15 +9,22 @@ from pitch_utils import bandpass_filter, autocorrelation_pitch
 st.set_page_config(page_title="Voice Pitch Detector", layout="centered")
 
 st.title("🎤 Voice Pitch Detection and Visualization")
-st.write("Upload a voice recording to analyze and visualize its pitch over time.")
+st.write("Upload a voice recording (`.wav` or `.mp3`) to analyze and visualize pitch over time.")
 
-# Upload .wav file
-audio_file = st.file_uploader("Upload a WAV audio file", type=["wav"])
+# 🔄 1. Allow .mp3 and .wav files
+audio_file = st.file_uploader("Upload an audio file", type=["wav", "mp3"])
 
 if audio_file is not None:
-    # Load audio
-    y, sr = librosa.load(audio_file, sr=None, mono=True)
-    st.audio(audio_file, format="audio/wav")
+    # 🔄 2. Load using librosa (supports mp3 and wav)
+    try:
+        y, sr = librosa.load(audio_file, sr=None, mono=True)
+    except Exception as e:
+        st.error(f"Error loading audio: {e}")
+        st.stop()
+
+    # Optional: Listen to uploaded file
+    st.audio(audio_file, format=f"audio/{audio_file.type.split('/')[-1]}")
+
     st.success(f"Audio loaded! Duration: {len(y)/sr:.2f} seconds, Sample Rate: {sr} Hz")
 
     # Pre-processing
@@ -42,4 +49,4 @@ if audio_file is not None:
     st.success("Pitch detection and visualization complete!")
 
 else:
-    st.info("Please upload a WAV file (mono/stereo, any length).")
+    st.info("Please upload a `.wav` or `.mp3` file to begin.")
