@@ -4,5 +4,4 @@ scipy
 matplotlib
 librosa
 soundfile
-pydub
-ffmpeg
+ffmpeg-python
